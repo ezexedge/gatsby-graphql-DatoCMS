@@ -5,3 +5,37 @@
  */
 
 // You can delete this file if you're not using it
+
+
+exports.createPages = async ({actions,graphql,reporter}) => {
+    const resultado = await graphql(`
+    
+    query {
+        allDatoCmsHabitacione{
+          nodes{
+            slug
+          }
+        }
+      }
+    
+    `)
+
+    //console.log(resultado.data.allDatoCmsHabitacione)
+
+    if(resultado.errors){
+        reporter.panic('No hubo resultado',resultado.errors)
+    }
+
+    const habitaciones = resultado.data.allDatoCmsHabitacione.nodes
+
+    habitaciones.forEach(habitacion =>{
+        actions.createPage({
+            path: habitacion.slug,
+            component: require.resolve('./src/components/habitaciones.js'),
+            context: {
+                slug: habitacion.slug
+            }
+
+        })
+    })
+}
